@@ -1,0 +1,75 @@
+.dvp-wrapper {
+  position: relative;
+  background: #000;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.dvp-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Loading spinner shown while iframe loads */
+.dvp-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: #0d1f35;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  font-family: 'Nunito', sans-serif;
+  z-index: 2;
+}
+
+.dvp-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: #e07b2a;
+  border-radius: 50%;
+  animation: dvp-spin 0.75s linear infinite;
+}
+
+@keyframes dvp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Bottom bar with Brave tip + fallback link */
+.dvp-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #f4f7fb;
+  border-top: 1px solid #dde4ef;
+  font-size: 0.75rem;
+}
+
+.dvp-brave-tip {
+  color: #8fa3bf;
+  font-style: italic;
+}
+
+.dvp-link {
+  color: #3a5a8a;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dvp-link:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+  .dvp-brave-tip { display: none; }
+}
