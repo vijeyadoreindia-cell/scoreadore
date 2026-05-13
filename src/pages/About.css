@@ -1,46 +1,11 @@
 .about-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 56px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 0;
+  align-items: start;
   padding: 48px 0;
-}
-
-.about-section-reverse {
-  direction: rtl;
-}
-.about-section-reverse > * {
-  direction: ltr;
-}
-
-/* Image */
-.about-img-col {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.about-img {
-  width: 100%; max-width: 420px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  object-fit: contain;
-  display: block;
-}
-
-/* ADORE logo — light card (no dark frame; logo may include its own art) */
-.adore-logo-about {
-  background: #ffffff;
-  padding: 20px;
-  max-width: 380px;
-  border: 1px solid var(--gray-200);
-}
-
-/* SCORE logo has white background */
-.score-logo-about {
-  background: white;
-  padding: 24px;
-  max-width: 380px;
-  border: 2px solid var(--gray-200);
+  max-width: 820px;
+  margin: 0 auto;
 }
 
 /* Text */
@@ -109,10 +74,6 @@
 /* Mobile */
 @media (max-width: 768px) {
   .about-section {
-    grid-template-columns: 1fr;
-    gap: 28px;
     padding: 32px 0;
   }
-  .about-section-reverse { direction: ltr; }
-  .about-img { max-width: 100%; }
 }
