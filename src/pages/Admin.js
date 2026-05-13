@@ -378,7 +378,6 @@ function ProgramForm({ initial, onSave, onClose }) {
   const [form, setForm] = useState({
     title: initial?.title || "",
     topicsLine: initial?.topicsLine || "",
-    posterUrl: initial?.posterUrl || "",
     sortOrder: initial?.sortOrder != null ? String(initial.sortOrder) : "0",
   });
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -390,7 +389,6 @@ function ProgramForm({ initial, onSave, onClose }) {
     onSave({
       title: form.title.trim(),
       topicsLine: form.topicsLine.trim(),
-      posterUrl: form.posterUrl.trim(),
       sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
     });
   };
@@ -409,11 +407,6 @@ function ProgramForm({ initial, onSave, onClose }) {
             <label>Topics (use | or line breaks)</label>
             <textarea value={form.topicsLine} onChange={set("topicsLine")} placeholder={"e.g. Resume | Interview | LinkedIn\nor one topic per line"} rows={4} />
             <p className="form-hint">Example: Introduction to Meta platforms | LinkedIn | Analytics & KPI</p>
-          </div>
-          <div className="form-group">
-            <label>Poster (Google Drive image link)</label>
-            <input value={form.posterUrl} onChange={set("posterUrl")} placeholder="https://drive.google.com/file/d/..." />
-            <p className="form-hint">Upload the poster to Drive → Share → Anyone with the link → paste the link here</p>
           </div>
           <div className="form-group">
             <label>Display order</label>
