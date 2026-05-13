@@ -41,9 +41,6 @@ export default function About() {
 
         {/* ── ADORE Section ───────────────────────────────────── */}
         <section className="about-section fade-up">
-          <div className="about-img-col">
-            <img src="/logo.png" alt="ADORE India" className="about-img adore-logo-about" />
-          </div>
           <div className="about-text-col">
             <div className="about-tag">About ADORE India</div>
             <h2>Motivating Youth for <span className="highlight">Positive Action</span></h2>
@@ -77,10 +74,7 @@ export default function About() {
         <div className="about-divider" />
 
         {/* ── SCORE Section ───────────────────────────────────── */}
-        <section className="about-section about-section-reverse fade-up">
-          <div className="about-img-col">
-            <img src="/score.png" alt="Team SCORE" className="about-img score-logo-about" />
-          </div>
+        <section className="about-section fade-up">
           <div className="about-text-col">
             <div className="about-tag score-tag">About SCORE</div>
             <h2>Speaker College <span className="highlight">Corporate Outreach</span></h2>
