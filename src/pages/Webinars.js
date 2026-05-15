@@ -13,14 +13,32 @@ export default function Webinars() {
 
   async function fetchWebinars() {
     try {
-      const q = query(collection(db, "webinars"), orderBy("date", "asc"));
+      // Fetch by createdAt descending so newest entries come first
+      const q = query(collection(db, "webinars"), orderBy("createdAt", "desc"));
       const snap = await getDocs(q);
       setWebinars(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      // Fallback: no index needed, sort client-side
+      try {
+        const snap = await getDocs(collection(db, "webinars"));
+        const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        // Newest createdAt first; featured float to top within that
+        list.sort((a, b) => {
+          const aTs = a.createdAt?.toMillis?.() ?? 0;
+          const bTs = b.createdAt?.toMillis?.() ?? 0;
+          return bTs - aTs;
+        });
+        setWebinars(list);
+      } catch (e2) { console.error(e2); }
+    }
     setLoading(false);
   }
 
+  // Only show non-completed; featured ones float to the very top
   const upcoming = webinars.filter((w) => !w.completed);
+  const featured = upcoming.filter((w) => w.featured);
+  const regular  = upcoming.filter((w) => !w.featured);
+  const sorted   = [...featured, ...regular];
 
   return (
     <main className="page-main">
@@ -44,15 +62,20 @@ export default function Webinars() {
               </div>
             ))}
           </div>
-        ) : upcoming.length === 0 ? (
+        ) : sorted.length === 0 ? (
           <div className="empty-state fade-up">
             <svg width="64" height="64" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             <p>No upcoming workshops or webinars scheduled. Stay tuned!</p>
           </div>
         ) : (
           <div className="webinars-list">
-            {upcoming.map((w, i) => (
-              <WebinarCard key={w.id} webinar={w} index={i} onViewPoster={() => setPosterModal(w)} />
+            {sorted.map((w, i) => (
+              <WebinarCard
+                key={w.id}
+                webinar={w}
+                index={i}
+                onViewPoster={() => setPosterModal(w)}
+              />
             ))}
           </div>
         )}
@@ -86,7 +109,7 @@ export default function Webinars() {
   );
 }
 
-/* Plain Drive image loader — no canvas, just img tag with Drive thumbnail URL */
+/* Plain Drive image loader */
 function DriveImage({ url, alt }) {
   const [failed, setFailed] = useState(false);
   const thumbUrl = getDriveThumbnailUrl(url);
@@ -115,7 +138,15 @@ function WebinarCard({ webinar, index, onViewPoster }) {
   const thumbUrl = getDriveThumbnailUrl(webinar.posterUrl);
 
   return (
-    <div className="webinar-card fade-up" style={{ animationDelay: `${index * 0.1}s` }}>
+    <div
+      className={`webinar-card fade-up${webinar.featured ? " webinar-card--featured" : ""}`}
+      style={{ animationDelay: `${index * 0.1}s` }}
+    >
+      {/* Featured banner ribbon */}
+      {webinar.featured && (
+        <div className="featured-ribbon">⭐ Featured</div>
+      )}
+
       <div className="wc-poster" onClick={onViewPoster}>
         {webinar.posterUrl && !imgFailed ? (
           <img
