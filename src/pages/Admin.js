@@ -308,17 +308,53 @@ function WebinarForm({ initial, onSave, onClose }) {
           <div className="form-group"><label>Description</label><textarea value={form.description} onChange={set("description")} placeholder="What will participants learn?" /></div>
 
           {/* Featured toggle */}
-          <div className="form-group" style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
-            <input
-              id="featured-toggle"
-              type="checkbox"
-              checked={form.featured}
-              onChange={toggle("featured")}
-              style={{ width: 18, height: 18, accentColor: "var(--orange)", cursor: "pointer" }}
-            />
-            <label htmlFor="featured-toggle" style={{ cursor: "pointer", marginBottom: 0, fontWeight: 600 }}>
-              ⭐ Pin as Featured — shows this webinar at the very top of the page
-            </label>
+          <div
+            onClick={toggle("featured")}
+            style={{
+              display: "flex", alignItems: "center", gap: 14,
+              padding: "14px 16px",
+              borderRadius: 10,
+              border: `2px solid ${form.featured ? "var(--orange)" : "var(--gray-200)"}`,
+              background: form.featured ? "#fff8f0" : "var(--gray-100)",
+              cursor: "pointer",
+              transition: "all 0.25s",
+              userSelect: "none",
+              marginTop: 4,
+            }}
+          >
+            {/* Track */}
+            <div style={{
+              position: "relative", flexShrink: 0,
+              width: 48, height: 26,
+              borderRadius: 999,
+              background: form.featured ? "var(--orange)" : "#cbd5e1",
+              transition: "background 0.25s",
+              boxShadow: form.featured ? "0 0 0 3px rgba(251,146,60,0.25)" : "none",
+            }}>
+              {/* Knob */}
+              <div style={{
+                position: "absolute",
+                top: 3, left: form.featured ? 25 : 3,
+                width: 20, height: 20,
+                borderRadius: "50%",
+                background: "white",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.22)",
+                transition: "left 0.22s cubic-bezier(.4,0,.2,1)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 11,
+              }}>
+                {form.featured ? "⭐" : ""}
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontWeight: 700, fontSize: "0.92rem", color: form.featured ? "var(--orange)" : "var(--gray-600)", transition: "color 0.25s" }}>
+                {form.featured ? "⭐ Pinned as Featured" : "Pin as Featured"}
+              </div>
+              <div style={{ fontSize: "0.78rem", color: "var(--gray-400)", marginTop: 2 }}>
+                {form.featured ? "This webinar will appear at the very top of the page" : "Tap to pin this webinar at the top of the page"}
+              </div>
+            </div>
           </div>
 
           <div className="form-actions">
