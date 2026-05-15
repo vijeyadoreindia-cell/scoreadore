@@ -187,9 +187,21 @@ function WebinarsAdmin() {
   useEffect(() => { fetch(); }, []);
 
   async function fetch() {
-    const q = query(collection(db, "webinars"), orderBy("date", "asc"));
-    const snap = await getDocs(q).catch(() => ({ docs: [] }));
-    setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    try {
+      const q = query(collection(db, "webinars"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    } catch (e) {
+      // Fallback if index not ready
+      const snap = await getDocs(collection(db, "webinars")).catch(() => ({ docs: [] }));
+      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      list.sort((a, b) => {
+        const aTs = a.createdAt?.toMillis?.() ?? 0;
+        const bTs = b.createdAt?.toMillis?.() ?? 0;
+        return bTs - aTs;
+      });
+      setItems(list);
+    }
     setLoading(false);
   }
 
@@ -220,15 +232,16 @@ function WebinarsAdmin() {
       {loading ? <p className="loading-text">Loading...</p> : (
         <div className="admin-table-wrap">
           <table className="admin-table">
-            <thead><tr><th>Title</th><th>Speaker</th><th>Date</th><th>Time</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Title</th><th>Speaker</th><th>Date</th><th>Time</th><th>Featured</th><th>Actions</th></tr></thead>
             <tbody>
-              {items.length === 0 && <tr><td colSpan={5} className="empty-row">No webinars yet</td></tr>}
+              {items.length === 0 && <tr><td colSpan={6} className="empty-row">No webinars yet</td></tr>}
               {items.map((w) => (
                 <tr key={w.id}>
                   <td><strong>{w.title}</strong></td>
                   <td>{w.speaker || "—"}</td>
                   <td>{w.date || "—"}</td>
                   <td>{w.time || "—"}</td>
+                  <td style={{ textAlign: "center" }}>{w.featured ? "⭐" : "—"}</td>
                   <td className="action-cell">
                     <button className="btn btn-ghost btn-sm" onClick={() => { setEditing(w); setShowForm(true); }}>Edit</button>
                     <button className="btn btn-danger btn-sm" onClick={() => handleDelete(w.id)}>Delete</button>
@@ -256,8 +269,10 @@ function WebinarForm({ initial, onSave, onClose }) {
     posterUrl: initial?.posterUrl || "",
     registrationLink: initial?.registrationLink || "",
     completed: initial?.completed || false,
+    featured: initial?.featured || false,
   });
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const toggle = (k) => () => setForm({ ...form, [k]: !form[k] });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -291,6 +306,21 @@ function WebinarForm({ initial, onSave, onClose }) {
             <input value={form.registrationLink} onChange={set("registrationLink")} placeholder="https://forms.gle/..." />
           </div>
           <div className="form-group"><label>Description</label><textarea value={form.description} onChange={set("description")} placeholder="What will participants learn?" /></div>
+
+          {/* Featured toggle */}
+          <div className="form-group" style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+            <input
+              id="featured-toggle"
+              type="checkbox"
+              checked={form.featured}
+              onChange={toggle("featured")}
+              style={{ width: 18, height: 18, accentColor: "var(--orange)", cursor: "pointer" }}
+            />
+            <label htmlFor="featured-toggle" style={{ cursor: "pointer", marginBottom: 0, fontWeight: 600 }}>
+              ⭐ Pin as Featured — shows this webinar at the very top of the page
+            </label>
+          </div>
+
           <div className="form-actions">
             <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
             <button type="submit" className="btn btn-primary">{initial ? "Update" : "Add Webinar"}</button>
